@@ -1,434 +1,114 @@
-export default function QuizEgoSite() {
-  const { useMemo, useState } = React;
+export default function GoogleFormStyleQuiz() {
+  const { useState } = React;
 
-  const quiz1Questions = useMemo(
-    () => [
-      "Je cherche à avoir raison même quand cela complique la discussion.",
-      "Je prends personnellement les retours ou critiques.",
-      "J’ai du mal à reconnaître rapidement mes erreurs.",
-      "Je compare souvent mes résultats à ceux des autres.",
-      "Je veux garder le contrôle sur les décisions.",
-      "Je me sens frustré(e) quand je ne suis pas reconnu(e).",
-      "J’interromps parfois pour faire valoir mon point de vue.",
-      "Je défends mes idées même quand les faits évoluent.",
-      "J’ai besoin de prouver ma valeur dans les échanges.",
-      "Je vis mal le fait de ne pas être choisi(e) ou consulté(e).",
-      "Je confonds parfois désaccord et remise en question personnelle.",
-      "Je cherche à préserver mon image avant de chercher la meilleure solution."
-    ],
-    []
-  );
+  const quiz1 = [
+    "Je cherche à avoir raison même quand cela complique la discussion.",
+    "Je prends personnellement les critiques.",
+    "J’ai du mal à reconnaître mes erreurs.",
+    "Je compare mes résultats aux autres.",
+    "Je veux garder le contrôle.",
+    "Je me sens frustré sans reconnaissance.",
+    "J’interromps pour défendre mon point.",
+    "Je défends mes idées malgré les faits.",
+    "J’ai besoin de prouver ma valeur.",
+    "Je vis mal l’exclusion.",
+    "Je prends les désaccords personnellement.",
+    "Je protège mon image avant tout."
+  ];
 
-  const quiz2Questions = useMemo(
-    () => [
-      {
-        question: "Lors d’un désaccord en équipe, vous avez tendance à…",
-        options: [
-          "A. Défendre votre position jusqu’au bout",
-          "B. Écouter puis ajuster votre point de vue si nécessaire",
-          "C. Vous retirer pour éviter de perdre la face"
-        ]
-      },
-      {
-        question: "Quand quelqu’un critique votre travail…",
-        options: [
-          "A. Vous vous sentez attaqué(e)",
-          "B. Vous distinguez le fond de la forme",
-          "C. Vous minimisez immédiatement la critique"
-        ]
-      },
-      {
-        question: "Si une autre personne reçoit le mérite d’un projet…",
-        options: [
-          "A. Vous le vivez mal",
-          "B. Vous regardez d’abord le résultat global",
-          "C. Vous vous justifiez intérieurement"
-        ]
-      },
-      {
-        question: "Face à une erreur évidente de votre part…",
-        options: [
-          "A. Vous cherchez d’abord à expliquer le contexte",
-          "B. Vous la reconnaissez clairement",
-          "C. Vous évitez le sujet"
-        ]
-      },
-      {
-        question: "Dans une discussion tendue…",
-        options: [
-          "A. Vous haussez le ton pour être entendu(e)",
-          "B. Vous reformulez pour clarifier",
-          "C. Vous vous fermez"
-        ]
-      },
-      {
-        question: "Quand une idée concurrente est meilleure que la vôtre…",
-        options: [
-          "A. Vous cherchez ses limites",
-          "B. Vous la soutenez",
-          "C. Vous restez mitigé(e) pour protéger votre position"
-        ]
-      },
-      {
-        question: "En situation de compétition…",
-        options: [
-          "A. Gagner est prioritaire",
-          "B. Vous gardez vos valeurs et votre recul",
-          "C. Vous alternez entre ambition et repli"
-        ]
-      },
-      {
-        question: "Quand on ne vous consulte pas…",
-        options: [
-          "A. Vous vous sentez dévalorisé(e)",
-          "B. Vous demandez simplement plus de contexte",
-          "C. Vous ruminez"
-        ]
-      },
-      {
-        question: "Quand votre opinion change…",
-        options: [
-          "A. Vous préférez ne pas trop le montrer",
-          "B. Vous l’assumez naturellement",
-          "C. Vous le présentez comme si vous l’aviez toujours pensé"
-        ]
-      },
-      {
-        question: "Quand on vous coupe la parole…",
-        options: [
-          "A. Vous réagissez immédiatement",
-          "B. Vous reprenez calmement le fil",
-          "C. Vous vous agacez en silence"
-        ]
-      },
-      {
-        question: "Quand quelqu’un réussit mieux que vous…",
-        options: [
-          "A. Vous vous comparez spontanément",
-          "B. Vous observez ce que vous pouvez apprendre",
-          "C. Vous relativisez sa réussite"
-        ]
-      },
-      {
-        question: "Votre plus grand risque face à l’ego est plutôt…",
-        options: [
-          "A. Le besoin de validation",
-          "B. L’équilibre reste globalement bon",
-          "C. Le retrait défensif"
-        ]
-      }
-    ],
-    []
-  );
+  const quiz2 = [
+    {
+      q: "Lors d’un désaccord :",
+      a: ["Défendre", "Écouter", "Éviter"]
+    },
+    {
+      q: "Face à une critique :",
+      a: ["Se sentir attaqué", "Analyser", "Minimiser"]
+    }
+  ];
 
-  const [mode, setMode] = useState("home");
-  const [q1Answers, setQ1Answers] = useState(Array(quiz1Questions.length).fill(0));
-  const [q2Answers, setQ2Answers] = useState(Array(quiz2Questions.length).fill(""));
+  const [answers1, setAnswers1] = useState(Array(12).fill(null));
+  const [answers2, setAnswers2] = useState(Array(2).fill(null));
 
-  const q1Done = q1Answers.every((value) => value > 0);
-  const q2Done = q2Answers.every(Boolean);
-
-  const q1Score = q1Answers.reduce((sum, value) => sum + value, 0);
-  const q2Score = q2Answers.reduce((sum, value) => {
-    const map = { A: 3, B: 1, C: 2 };
-    return sum + (map[value] || 0);
-  }, 0);
-
-  const totalScore = q1Score + q2Score;
-
-  const profile = (() => {
-    if (totalScore <= 34) return "Votre ego semble globalement bien régulé dans vos décisions.";
-    if (totalScore <= 52) return "Votre ego influence parfois vos réactions : un peu plus d’observation peut faire la différence.";
-    return "Votre ego semble prendre une place importante dans certaines situations clés.";
-  })();
-
-  const CardIcon = ({ type }) => (
-    <div className="h-20 w-20 rounded-full bg-[#e8dced] flex items-center justify-center shrink-0">
-      {type === 1 ? (
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#6d3fb2" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M4 6h12" />
-          <path d="M4 12h16" />
-          <path d="M4 18h12" />
-        </svg>
-      ) : (
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#6d3fb2" strokeWidth="2.2" strokeLinecap="round">
-          <circle cx="6" cy="6" r="1.2" fill="#6d3fb2" />
-          <circle cx="6" cy="12" r="1.2" fill="#6d3fb2" />
-          <circle cx="6" cy="18" r="1.2" fill="#6d3fb2" />
-          <path d="M10 6h10" />
-          <path d="M10 12h10" />
-          <path d="M10 18h10" />
-        </svg>
-      )}
+  const Section = ({ title, children }) => (
+    <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 className="text-xl font-semibold mb-4">{title}</h2>
+      {children}
     </div>
   );
-
-  const Shell = ({ children }) => (
-    <div className="min-h-screen bg-[#e8e2ef] px-4 py-8 md:px-8">
-      <div className="mx-auto max-w-6xl">{children}</div>
-    </div>
-  );
-
-  const TopCard = () => (
-    <div className="overflow-hidden rounded-[22px] bg-[#f5f5f5] shadow-sm border border-[#e9e3ef]">
-      <div className="h-5 bg-[#673ab7]" />
-      <div className="px-8 py-10 md:px-12 md:py-12">
-        <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-[#232228]">
-          Quand votre ego vous limite-t-il ?
-        </h1>
-        <p className="mt-6 max-w-4xl text-xl md:text-[2rem] leading-tight text-[#515151]">
-          Deux questionnaires complémentaires pour identifier les situations où votre ego influence vos décisions.
-        </p>
-        <p className="mt-14 text-xl md:text-[2rem] leading-tight text-[#515151]">
-          Sélectionnez un questionnaire pour commencer.
-        </p>
-      </div>
-    </div>
-  );
-
-  if (mode === "home") {
-    return (
-      <Shell>
-        <TopCard />
-
-        <div className="mt-6 space-y-8">
-          <button
-            onClick={() => setMode("quiz1")}
-            className="w-full rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] px-7 py-10 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <div className="flex items-center gap-6 md:gap-8">
-              <CardIcon type={1} />
-              <div>
-                <h2 className="text-2xl md:text-4xl font-semibold text-[#232228]">Quiz 1 — Échelle de fréquence</h2>
-                <p className="mt-2 text-xl md:text-[2rem] leading-tight text-[#4d4d4d]">
-                  12 affirmations — répondez de 1 (jamais) à 5 (très souvent)
-                </p>
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setMode("quiz2")}
-            className="w-full rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] px-7 py-10 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-          >
-            <div className="flex items-center gap-6 md:gap-8">
-              <CardIcon type={2} />
-              <div>
-                <h2 className="text-2xl md:text-4xl font-semibold text-[#232228]">Quiz 2 — Choix de réponse</h2>
-                <p className="mt-2 text-xl md:text-[2rem] leading-tight text-[#4d4d4d]">
-                  12 questions — choisissez la réponse A, B ou C
-                </p>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <button
-          onClick={() => setMode("both")}
-          className="mt-12 w-full rounded-[22px] border border-[#e3dce8] bg-[#f4eef8] px-8 py-8 text-center text-2xl font-medium text-[#6b5f74] transition hover:bg-[#efe8f5]"
-        >
-          Faire les deux questionnaires
-        </button>
-      </Shell>
-    );
-  }
-
-  const HomeHeader = (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-      <button
-        onClick={() => setMode("home")}
-        className="rounded-full border border-[#d7cfe0] bg-white px-4 py-2 text-sm font-medium text-[#433c4b] hover:bg-[#f7f4fa]"
-      >
-        ← Retour
-      </button>
-      <div className="text-sm text-[#5c5365]">Site exportable en une seule page React</div>
-    </div>
-  );
-
-  if (mode === "quiz1") {
-    return (
-      <Shell>
-        {HomeHeader}
-        <div className="rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] p-6 md:p-8 shadow-sm">
-          <h2 className="text-3xl font-semibold text-[#232228]">Quiz 1 — Échelle de fréquence</h2>
-          <p className="mt-2 text-[#595260]">Répondez à chaque affirmation sur une échelle de 1 à 5.</p>
-
-          <div className="mt-8 space-y-5">
-            {quiz1Questions.map((question, index) => (
-              <div key={index} className="rounded-2xl border border-[#e3dde8] bg-white p-5">
-                <div className="font-medium text-[#2c2831]">{index + 1}. {question}</div>
-                <div className="mt-4 grid grid-cols-5 gap-2">
-                  {[1, 2, 3, 4, 5].map((value) => {
-                    const active = q1Answers[index] === value;
-                    return (
-                      <button
-                        key={value}
-                        onClick={() => {
-                          const next = [...q1Answers];
-                          next[index] = value;
-                          setQ1Answers(next);
-                        }}
-                        className={`rounded-xl px-3 py-3 text-sm font-semibold transition ${
-                          active
-                            ? "bg-[#673ab7] text-white"
-                            : "bg-[#f3eef7] text-[#4b4353] hover:bg-[#e9dff2]"
-                        }`}
-                      >
-                        {value}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-2xl bg-[#efe8f5] p-5 text-[#423a49]">
-            <div className="font-semibold">Score actuel : {q1Score} / 60</div>
-            <div className="mt-1 text-sm">Barème indicatif : plus le score est élevé, plus l’ego influence fréquemment vos réactions.</div>
-          </div>
-
-          <button
-            disabled={!q1Done}
-            onClick={() => setMode("results")}
-            className={`mt-6 rounded-2xl px-6 py-4 font-semibold ${
-              q1Done ? "bg-[#673ab7] text-white hover:opacity-95" : "bg-[#e7e1ec] text-[#9b91a4]"
-            }`}
-          >
-            Voir mon résultat
-          </button>
-        </div>
-      </Shell>
-    );
-  }
-
-  if (mode === "quiz2") {
-    return (
-      <Shell>
-        {HomeHeader}
-        <div className="rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] p-6 md:p-8 shadow-sm">
-          <h2 className="text-3xl font-semibold text-[#232228]">Quiz 2 — Choix de réponse</h2>
-          <p className="mt-2 text-[#595260]">Choisissez la réponse A, B ou C pour chaque situation.</p>
-
-          <div className="mt-8 space-y-5">
-            {quiz2Questions.map((item, index) => (
-              <div key={index} className="rounded-2xl border border-[#e3dde8] bg-white p-5">
-                <div className="font-medium text-[#2c2831]">{index + 1}. {item.question}</div>
-                <div className="mt-4 grid gap-3">
-                  {item.options.map((option) => {
-                    const letter = option[0];
-                    const active = q2Answers[index] === letter;
-                    return (
-                      <button
-                        key={option}
-                        onClick={() => {
-                          const next = [...q2Answers];
-                          next[index] = letter;
-                          setQ2Answers(next);
-                        }}
-                        className={`rounded-xl border px-4 py-3 text-left transition ${
-                          active
-                            ? "border-[#673ab7] bg-[#efe8f8] text-[#2d2437]"
-                            : "border-[#e8e1ee] bg-[#fbfbfc] text-[#4b4353] hover:bg-[#f5f1f8]"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-2xl bg-[#efe8f5] p-5 text-[#423a49]">
-            <div className="font-semibold">Progression : {q2Answers.filter(Boolean).length} / 12</div>
-            <div className="mt-1 text-sm">Les réponses B sont considérées ici comme les plus équilibrées. Modifiez ce barème selon votre méthode.</div>
-          </div>
-
-          <button
-            disabled={!q2Done}
-            onClick={() => setMode("results")}
-            className={`mt-6 rounded-2xl px-6 py-4 font-semibold ${
-              q2Done ? "bg-[#673ab7] text-white hover:opacity-95" : "bg-[#e7e1ec] text-[#9b91a4]"
-            }`}
-          >
-            Voir mon résultat
-          </button>
-        </div>
-      </Shell>
-    );
-  }
-
-  if (mode === "both") {
-    return (
-      <Shell>
-        {HomeHeader}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] p-6 shadow-sm">
-            <h2 className="text-2xl font-semibold text-[#232228]">Quiz 1</h2>
-            <p className="mt-2 text-[#595260]">Complétez l’échelle de fréquence.</p>
-            <button onClick={() => setMode("quiz1")} className="mt-5 rounded-2xl bg-[#673ab7] px-5 py-3 text-white">
-              Commencer
-            </button>
-          </div>
-          <div className="rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] p-6 shadow-sm">
-            <h2 className="text-2xl font-semibold text-[#232228]">Quiz 2</h2>
-            <p className="mt-2 text-[#595260]">Complétez le questionnaire à choix.</p>
-            <button onClick={() => setMode("quiz2")} className="mt-5 rounded-2xl bg-[#673ab7] px-5 py-3 text-white">
-              Commencer
-            </button>
-          </div>
-        </div>
-      </Shell>
-    );
-  }
 
   return (
-    <Shell>
-      {HomeHeader}
-      <div className="rounded-[22px] bg-[#f5f5f5] border border-[#e9e3ef] p-6 md:p-8 shadow-sm">
-        <h2 className="text-3xl font-semibold text-[#232228]">Résultat</h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl bg-white p-5 border border-[#e5dfeb]">
-            <div className="text-sm text-[#6d6576]">Quiz 1</div>
-            <div className="mt-2 text-3xl font-semibold text-[#2b2432]">{q1Score}<span className="text-lg text-[#776d80]"> / 60</span></div>
-          </div>
-          <div className="rounded-2xl bg-white p-5 border border-[#e5dfeb]">
-            <div className="text-sm text-[#6d6576]">Quiz 2</div>
-            <div className="mt-2 text-3xl font-semibold text-[#2b2432]">{q2Score}<span className="text-lg text-[#776d80]"> / 36</span></div>
-          </div>
-          <div className="rounded-2xl bg-white p-5 border border-[#e5dfeb]">
-            <div className="text-sm text-[#6d6576]">Total</div>
-            <div className="mt-2 text-3xl font-semibold text-[#2b2432]">{totalScore}<span className="text-lg text-[#776d80]"> / 96</span></div>
+    <div className="min-h-screen bg-[#f0ebf8] py-10 px-4 flex justify-center">
+      <div className="w-full max-w-2xl">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow mb-6 overflow-hidden">
+          <div className="h-3 bg-purple-600" />
+          <div className="p-6">
+            <h1 className="text-2xl font-bold">
+              Quand votre ego vous limite-t-il ?
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Répondez aux deux questionnaires
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl bg-[#efe8f5] p-6">
-          <div className="text-sm uppercase tracking-[0.2em] text-[#6f6380]">Lecture</div>
-          <p className="mt-3 text-lg leading-8 text-[#342b3d]">{profile}</p>
-        </div>
+        {/* Quiz 1 */}
+        <Section title="Quiz 1 — Échelle de fréquence">
+          {quiz1.map((q, i) => (
+            <div key={i} className="mb-6">
+              <p className="mb-2">{i + 1}. {q}</p>
+              <div className="flex gap-4">
+                {[1,2,3,4,5].map(v => (
+                  <label key={v} className="flex items-center gap-1 cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`q1-${i}`}
+                      checked={answers1[i] === v}
+                      onChange={() => {
+                        const copy = [...answers1];
+                        copy[i] = v;
+                        setAnswers1(copy);
+                      }}
+                    />
+                    {v}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </Section>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button onClick={() => setMode("home")} className="rounded-2xl bg-[#673ab7] px-5 py-3 font-semibold text-white">
-            Revenir à l’accueil
+        {/* Quiz 2 */}
+        <Section title="Quiz 2 — Choix de réponse">
+          {quiz2.map((item, i) => (
+            <div key={i} className="mb-6">
+              <p className="mb-2">{item.q}</p>
+              {item.a.map((opt, j) => (
+                <label key={j} className="block cursor-pointer">
+                  <input
+                    type="radio"
+                    name={`q2-${i}`}
+                    checked={answers2[i] === j}
+                    onChange={() => {
+                      const copy = [...answers2];
+                      copy[i] = j;
+                      setAnswers2(copy);
+                    }}
+                  /> {opt}
+                </label>
+              ))}
+            </div>
+          ))}
+        </Section>
+
+        {/* Submit */}
+        <div className="text-center">
+          <button className="bg-purple-600 text-white px-6 py-3 rounded">
+            Envoyer
           </button>
-          <button
-            onClick={() => {
-              setQ1Answers(Array(quiz1Questions.length).fill(0));
-              setQ2Answers(Array(quiz2Questions.length).fill(""));
-              setMode("home");
-            }}
-            className="rounded-2xl border border-[#d9d0e3] bg-white px-5 py-3 font-semibold text-[#433c4b]"
-          >
-            Réinitialiser
-          </button>
         </div>
-
-        <p className="mt-8 text-sm text-[#6f6678]">
-          Remplacez les questions, le scoring et le texte d’interprétation par votre contenu réel pour une version finale prête à publier.
-        </p>
       </div>
-    </Shell>
+    </div>
   );
 }

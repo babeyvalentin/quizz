@@ -1,114 +1,535 @@
-export default function GoogleFormStyleQuiz() {
-  const { useState } = React;
-
-  const quiz1 = [
-    "Je cherche à avoir raison même quand cela complique la discussion.",
-    "Je prends personnellement les critiques.",
-    "J’ai du mal à reconnaître mes erreurs.",
-    "Je compare mes résultats aux autres.",
-    "Je veux garder le contrôle.",
-    "Je me sens frustré sans reconnaissance.",
-    "J’interromps pour défendre mon point.",
-    "Je défends mes idées malgré les faits.",
-    "J’ai besoin de prouver ma valeur.",
-    "Je vis mal l’exclusion.",
-    "Je prends les désaccords personnellement.",
-    "Je protège mon image avant tout."
-  ];
-
-  const quiz2 = [
-    {
-      q: "Lors d’un désaccord :",
-      a: ["Défendre", "Écouter", "Éviter"]
-    },
-    {
-      q: "Face à une critique :",
-      a: ["Se sentir attaqué", "Analyser", "Minimiser"]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quand votre ego vous limite-t-il ?</title>
+  <style>
+    :root {
+      --bg: #f0ebf8;
+      --card: #ffffff;
+      --text: #202124;
+      --muted: #5f6368;
+      --purple: #673ab7;
+      --purple-soft: #ede7f6;
+      --border: #dadce0;
     }
-  ];
 
-  const [answers1, setAnswers1] = useState(Array(12).fill(null));
-  const [answers2, setAnswers2] = useState(Array(2).fill(null));
+    * { box-sizing: border-box; }
 
-  const Section = ({ title, children }) => (
-    <div className="bg-white rounded-lg shadow p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      {children}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
+
+    .form-header,
+    .card,
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(60, 64, 67, 0.15);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .form-header-top {
+      height: 10px;
+      background: var(--purple);
+    }
+
+    .form-header-content,
+    .card-content,
+    .result-content {
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+      font-weight: 500;
+    }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+
+    .subtitle,
+    .helper,
+    .question-note,
+    .footer-note {
+      color: var(--muted);
+    }
+
+    .required {
+      color: #d93025;
+      margin-left: 4px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      font-size: 0.96rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .question-block {
+      padding: 18px 0;
+      border-top: 1px solid #eee;
+    }
+
+    .question-block:first-of-type {
+      border-top: 0;
+      padding-top: 4px;
+    }
+
+    .question-title {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .scale-options,
+    .radio-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scale-options {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      max-width: 520px;
+    }
+
+    label.option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.97rem;
+    }
+
+    .scale-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 6px;
+      background: #fafafa;
+      text-align: center;
+      min-height: 74px;
+    }
+
+    .scale-label small {
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    input[type="radio"] {
+      accent-color: var(--purple);
+      transform: scale(1.05);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 4px;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--purple);
+      color: white;
+      font-weight: 600;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--purple);
+      font-weight: 600;
+      padding-left: 0;
+    }
+
+    .result-card {
+      display: none;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .score-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fafafa;
+    }
+
+    .score-box .label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .score-box .value {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .interpretation {
+      background: var(--purple-soft);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: #d93025;
+      font-size: 0.92rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 1.65rem; }
+      .scale-options { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: 1fr; }
+      .form-header-content,
+      .card-content,
+      .result-content { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-header">
+      <div class="form-header-top"></div>
+      <div class="form-header-content">
+        <h1>Quand votre ego vous limite-t-il ?</h1>
+        <div class="subtitle">Deux questionnaires complémentaires pour identifier les situations où votre ego influence vos décisions.</div>
+        <p class="helper">Tous les champs sont obligatoires<span class="required">*</span></p>
+      </div>
     </div>
-  );
 
-  return (
-    <div className="min-h-screen bg-[#f0ebf8] py-10 px-4 flex justify-center">
-      <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow mb-6 overflow-hidden">
-          <div className="h-3 bg-purple-600" />
-          <div className="p-6">
-            <h1 className="text-2xl font-bold">
-              Quand votre ego vous limite-t-il ?
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Répondez aux deux questionnaires
-            </p>
+    <form id="egoForm">
+      <div class="card">
+        <div class="card-content">
+          <div class="section-title">Quiz 1 — Échelle de fréquence</div>
+          <div class="section-desc">12 affirmations — répondez de 1 (jamais) à 5 (très souvent)</div>
+          <div id="quiz1"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="section-title">Quiz 2 — Choix de réponse</div>
+          <div class="section-desc">12 questions — choisissez la réponse A, B ou C</div>
+          <div id="quiz2"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-content">
+          <div class="actions">
+            <button type="submit" class="btn-primary">Envoyer</button>
+            <button type="button" class="btn-secondary" id="resetBtn">Effacer le formulaire</button>
+          </div>
+          <div class="error" id="errorMsg">Merci de répondre à toutes les questions avant d’envoyer le formulaire.</div>
+          <p class="footer-note">Cette version est autonome et publiable telle quelle sur un site web. Vous pouvez remplacer les questions, le barème ou connecter un envoi vers Google Sheets, Airtable ou une base de données.</p>
+        </div>
+      </div>
+    </form>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-content">
+        <h2>Votre résultat</h2>
+        <div class="score-grid">
+          <div class="score-box">
+            <div class="label">Quiz 1</div>
+            <div class="value" id="score1">0</div>
+          </div>
+          <div class="score-box">
+            <div class="label">Quiz 2</div>
+            <div class="value" id="score2">0</div>
+          </div>
+          <div class="score-box">
+            <div class="label">Total</div>
+            <div class="value" id="scoreTotal">0</div>
           </div>
         </div>
-
-        {/* Quiz 1 */}
-        <Section title="Quiz 1 — Échelle de fréquence">
-          {quiz1.map((q, i) => (
-            <div key={i} className="mb-6">
-              <p className="mb-2">{i + 1}. {q}</p>
-              <div className="flex gap-4">
-                {[1,2,3,4,5].map(v => (
-                  <label key={v} className="flex items-center gap-1 cursor-pointer">
-                    <input
-                      type="radio"
-                      name={`q1-${i}`}
-                      checked={answers1[i] === v}
-                      onChange={() => {
-                        const copy = [...answers1];
-                        copy[i] = v;
-                        setAnswers1(copy);
-                      }}
-                    />
-                    {v}
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-        </Section>
-
-        {/* Quiz 2 */}
-        <Section title="Quiz 2 — Choix de réponse">
-          {quiz2.map((item, i) => (
-            <div key={i} className="mb-6">
-              <p className="mb-2">{item.q}</p>
-              {item.a.map((opt, j) => (
-                <label key={j} className="block cursor-pointer">
-                  <input
-                    type="radio"
-                    name={`q2-${i}`}
-                    checked={answers2[i] === j}
-                    onChange={() => {
-                      const copy = [...answers2];
-                      copy[i] = j;
-                      setAnswers2(copy);
-                    }}
-                  /> {opt}
-                </label>
-              ))}
-            </div>
-          ))}
-        </Section>
-
-        {/* Submit */}
-        <div className="text-center">
-          <button className="bg-purple-600 text-white px-6 py-3 rounded">
-            Envoyer
-          </button>
+        <div class="interpretation">
+          <strong>Interprétation</strong>
+          <p id="interpretationText"></p>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn-primary" id="restartBtn">Recommencer</button>
         </div>
       </div>
     </div>
-  );
-}
+  </div>
+
+  <script>
+    const quiz1Questions = [
+      "Je cherche à avoir raison même quand cela complique la discussion.",
+      "Je prends personnellement les retours ou critiques.",
+      "J’ai du mal à reconnaître rapidement mes erreurs.",
+      "Je compare souvent mes résultats à ceux des autres.",
+      "Je veux garder le contrôle sur les décisions.",
+      "Je me sens frustré(e) quand je ne suis pas reconnu(e).",
+      "J’interromps parfois pour faire valoir mon point de vue.",
+      "Je défends mes idées même quand les faits évoluent.",
+      "J’ai besoin de prouver ma valeur dans les échanges.",
+      "Je vis mal le fait de ne pas être choisi(e) ou consulté(e).",
+      "Je confonds parfois désaccord et remise en question personnelle.",
+      "Je cherche à préserver mon image avant de chercher la meilleure solution."
+    ];
+
+    const quiz2Questions = [
+      {
+        question: "Lors d’un désaccord en équipe, vous avez tendance à…",
+        options: [
+          "A. Défendre votre position jusqu’au bout",
+          "B. Écouter puis ajuster votre point de vue si nécessaire",
+          "C. Vous retirer pour éviter de perdre la face"
+        ]
+      },
+      {
+        question: "Quand quelqu’un critique votre travail…",
+        options: [
+          "A. Vous vous sentez attaqué(e)",
+          "B. Vous distinguez le fond de la forme",
+          "C. Vous minimisez immédiatement la critique"
+        ]
+      },
+      {
+        question: "Si une autre personne reçoit le mérite d’un projet…",
+        options: [
+          "A. Vous le vivez mal",
+          "B. Vous regardez d’abord le résultat global",
+          "C. Vous vous justifiez intérieurement"
+        ]
+      },
+      {
+        question: "Face à une erreur évidente de votre part…",
+        options: [
+          "A. Vous cherchez d’abord à expliquer le contexte",
+          "B. Vous la reconnaissez clairement",
+          "C. Vous évitez le sujet"
+        ]
+      },
+      {
+        question: "Dans une discussion tendue…",
+        options: [
+          "A. Vous haussez le ton pour être entendu(e)",
+          "B. Vous reformulez pour clarifier",
+          "C. Vous vous fermez"
+        ]
+      },
+      {
+        question: "Quand une idée concurrente est meilleure que la vôtre…",
+        options: [
+          "A. Vous cherchez ses limites",
+          "B. Vous la soutenez",
+          "C. Vous restez mitigé(e) pour protéger votre position"
+        ]
+      },
+      {
+        question: "En situation de compétition…",
+        options: [
+          "A. Gagner est prioritaire",
+          "B. Vous gardez vos valeurs et votre recul",
+          "C. Vous alternez entre ambition et repli"
+        ]
+      },
+      {
+        question: "Quand on ne vous consulte pas…",
+        options: [
+          "A. Vous vous sentez dévalorisé(e)",
+          "B. Vous demandez simplement plus de contexte",
+          "C. Vous ruminez"
+        ]
+      },
+      {
+        question: "Quand votre opinion change…",
+        options: [
+          "A. Vous préférez ne pas trop le montrer",
+          "B. Vous l’assumez naturellement",
+          "C. Vous le présentez comme si vous l’aviez toujours pensé"
+        ]
+      },
+      {
+        question: "Quand on vous coupe la parole…",
+        options: [
+          "A. Vous réagissez immédiatement",
+          "B. Vous reprenez calmement le fil",
+          "C. Vous vous agacez en silence"
+        ]
+      },
+      {
+        question: "Quand quelqu’un réussit mieux que vous…",
+        options: [
+          "A. Vous vous comparez spontanément",
+          "B. Vous observez ce que vous pouvez apprendre",
+          "C. Vous relativisez sa réussite"
+        ]
+      },
+      {
+        question: "Votre plus grand risque face à l’ego est plutôt…",
+        options: [
+          "A. Le besoin de validation",
+          "B. L’équilibre reste globalement bon",
+          "C. Le retrait défensif"
+        ]
+      }
+    ];
+
+    const quiz1Container = document.getElementById('quiz1');
+    const quiz2Container = document.getElementById('quiz2');
+    const form = document.getElementById('egoForm');
+    const resultCard = document.getElementById('resultCard');
+    const errorMsg = document.getElementById('errorMsg');
+    const resetBtn = document.getElementById('resetBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    function renderQuiz1() {
+      const frequencyLabels = [
+        '1', '2', '3', '4', '5'
+      ];
+      const frequencyHints = [
+        'Jamais', '', 'Parfois', '', 'Très souvent'
+      ];
+
+      quiz1Questions.forEach((question, index) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        block.innerHTML = `
+          <div class="question-title">${index + 1}. ${question}<span class="required">*</span></div>
+          <div class="scale-options">
+            ${frequencyLabels.map((label, i) => `
+              <label class="option scale-label">
+                <input type="radio" name="quiz1_${index}" value="${i + 1}">
+                <span>${label}</span>
+                <small>${frequencyHints[i]}</small>
+              </label>
+            `).join('')}
+          </div>
+        `;
+        quiz1Container.appendChild(block);
+      });
+    }
+
+    function renderQuiz2() {
+      quiz2Questions.forEach((item, index) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        block.innerHTML = `
+          <div class="question-title">${index + 1}. ${item.question}<span class="required">*</span></div>
+          <div class="radio-options">
+            ${item.options.map((option, optionIndex) => `
+              <label class="option">
+                <input type="radio" name="quiz2_${index}" value="${['A','B','C'][optionIndex]}">
+                <span>${option}</span>
+              </label>
+            `).join('')}
+          </div>
+        `;
+        quiz2Container.appendChild(block);
+      });
+    }
+
+    function getInterpretation(total) {
+      if (total <= 34) {
+        return "Votre ego semble globalement bien régulé dans vos décisions. Vous gardez souvent du recul dans les situations sensibles.";
+      }
+      if (total <= 52) {
+        return "Votre ego influence parfois vos réactions. Un peu plus d’observation, de recul et d’écoute peut vous aider à décider avec plus de sérénité.";
+      }
+      return "Votre ego semble prendre une place importante dans certaines situations clés. Cela peut affecter vos échanges, votre jugement ou votre capacité à ajuster votre position.";
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      let score1 = 0;
+      let score2 = 0;
+      let complete = true;
+
+      for (let i = 0; i < quiz1Questions.length; i++) {
+        const checked = document.querySelector(`input[name="quiz1_${i}"]:checked`);
+        if (!checked) complete = false;
+        else score1 += Number(checked.value);
+      }
+
+      const map = { A: 3, B: 1, C: 2 };
+      for (let i = 0; i < quiz2Questions.length; i++) {
+        const checked = document.querySelector(`input[name="quiz2_${i}"]:checked`);
+        if (!checked) complete = false;
+        else score2 += map[checked.value];
+      }
+
+      if (!complete) {
+        errorMsg.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      errorMsg.style.display = 'none';
+
+      const total = score1 + score2;
+      document.getElementById('score1').textContent = score1 + ' / 60';
+      document.getElementById('score2').textContent = score2 + ' / 36';
+      document.getElementById('scoreTotal').textContent = total + ' / 96';
+      document.getElementById('interpretationText').textContent = getInterpretation(total);
+
+      resultCard.style.display = 'block';
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    resetBtn.addEventListener('click', function () {
+      form.reset();
+      errorMsg.style.display = 'none';
+      resultCard.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    restartBtn.addEventListener('click', function () {
+      form.reset();
+      resultCard.style.display = 'none';
+      errorMsg.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    renderQuiz1();
+    renderQuiz2();
+  </script>
+</body>
+</html>
